@@ -1,19 +1,26 @@
-visited = set()
+
 
 class PathFinder:
     goalFound = False
-    def dfs(self, visited, pathBlocks, currentBlock):
+    visited = set()
+    path = []
+    def dfs(self, currentBlock):
+        
         if(currentBlock.isGoal):
             self.goalFound = True
-        if(currentBlock not in visited and self.goalFound == False):
-            visited.add(currentBlock)
+            self.path.append(currentBlock)
+            return
+        if(currentBlock not in self.visited and self.goalFound == False):
+            self.visited.add(currentBlock)
             print(currentBlock)
             for neighbour in currentBlock.adjacents:
                 print(neighbour)
-                n = paths.GetBlockByID(neighbour)
-                if(n.traversable):
-                    self.dfs(visited, pathBlocks, paths.GetBlockByID(neighbour))
-
+                neighbourBlock = paths.GetBlockByID(neighbour)
+                if(neighbourBlock.traversable):
+                    self.dfs(neighbourBlock)
+                    if(self.goalFound):
+                        self.path.append(currentBlock)
+                        return
     #def bfs():
 
     #def Astar():
