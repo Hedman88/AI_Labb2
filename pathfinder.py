@@ -4,6 +4,7 @@ class PathFinder:
     goalFound = False
     visited = set()
     path = []
+    bfsQ = []
     def dfs(self, currentBlock):
         
         if(currentBlock.isGoal):
@@ -21,7 +22,22 @@ class PathFinder:
                     if(self.goalFound):
                         self.path.append(currentBlock)
                         return
-    #def bfs():
+                    
+    def bfs(self, startBlock):
+        self.visited.add(startBlock)
+        self.bfsQ.append(startBlock)
+        while self.bfsQ:
+            s = self.bfsQ.pop(0)
+            print(s.id)
+            for neighbour in s.adjacents:
+                neighbourBlock = paths.GetBlockByID(neighbour)
+                if neighbourBlock not in self.visited:
+                    self.visited.add(neighbourBlock)
+                    self.bfsQ.append(neighbourBlock)
+                    if(s.isGoal):
+                        print(s)
+                        self.path.append(s)
+                        return
 
     #def Astar():
         
@@ -44,7 +60,7 @@ class Paths:
     def GetBlockByID(self, ID):
         for i in self.pathBlocks:
             if(i.id == ID):
-                print(ID)
+                #print(ID)
                 return i
 
 paths = Paths()
