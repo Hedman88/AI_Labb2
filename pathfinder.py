@@ -34,15 +34,82 @@ class PathFinder:
                 if neighbourBlock not in self.visited:
                     self.visited.add(neighbourBlock)
                     self.bfsQ.append(neighbourBlock)
-                    if(s.isGoal):
-                        print(s)
-                        self.path.append(s)
+                    neighbourBlock.prevBlockID = s.id
+                    if(neighbourBlock.isGoal):
+                        print(neighbourBlock)
+                        self.path.append(neighbourBlock)
+                        prevID = neighbourBlock.prevBlockID
+                        while(prevID != 0):
+                            print("going")
+                            prevBlock = paths.GetBlockByID(prevID)
+                            self.path.append(prevBlock)
+                            prevID = prevBlock.prevBlockID
                         return
+                
 
-    #def Astar():
+    def AStar(self, startBlock, goalBlock):
+        openList = []
+        closedList = []
+        openList.append(startBlock)
+
+        while openList:
+            print("running")
+            q = openList[0]
+            #find best block by f value
+            for i in range(len(openList)):
+                if(q.f > openList[i].f):
+                    q = openList[i]
+            openList.remove(q)
+            #go through all successors
+            for neighbourID in q.adjacents:
+                skip = False
+                neighbourBlock = paths.GetBlockByID(neighbourID)
+                #set q as parent to all neighbour blocks
+                neighbourBlock.prevBlockID = q.id
+                if(neighbourBlock.isGoal):
+                    self.path.append(neighbourBlock)
+                    prevID = neighbourBlock.prevBlockID
+                    while(prevID != 0):
+                        #print("going")
+                        print(prevID)
+                        prevBlock = paths.GetBlockByID(prevID)
+                        self.path.append(prevBlock)
+                        prevID = prevBlock.prevBlockID
+                    return
+                if(neighbourBlock.id%100 != q.id and neighbourBlock.id/100 != q.id):
+                    neighbourBlock.g = q.g + 1.4
+                else:
+                    neighbourBlock.g = q.g + 1
+                neighbourBlock.h = self.DDH(neighbourID)
+                neighbourBlock.f = neighbourBlock.g + neighbourBlock.h
+                for i in openList:
+                    if(i.id == neighbourBlock.id and neighbourBlock.f >= i.f):
+                        skip = True
+                for i in closedList:
+                    if(i.id == neighbourBlock.id and neighbourBlock.f >= i.f):
+                        skip = True
+                if(skip == False):
+                    openList.append(neighbourBlock)
+            closedList.append(q)                
+
+    def DDH(self, currentID):
+        xCur = currentID / 100
+        yCur = currentID % 100
+        #Converting ID to coordinates
+        goalID = paths.GetGoal().id
+        xGoal = goalID / 100
+        yGoal = goalID % 100
+        #Diagonal Distance Heuristics
+        h = max([abs(xCur - xGoal), abs(yCur - yGoal)])
+        return h
         
 class PathBlock:
-
+    nextBlockID = 0
+    prevBlockID = 0
+    #A* values
+    g = 0.0
+    h = 0.0
+    f = 0.0
     def __init__(self, ID, adjacents, traversable, isGoal, isStart):
         self.id = ID
         self.adjacents = adjacents
@@ -57,6 +124,11 @@ class Paths:
             if(i.isStart):
                 return i
 
+    def GetGoal(self):
+        for i in self.pathBlocks:
+            if(i.isGoal):
+                return i
+    
     def GetBlockByID(self, ID):
         for i in self.pathBlocks:
             if(i.id == ID):

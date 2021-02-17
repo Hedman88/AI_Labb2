@@ -6,7 +6,7 @@ pygame.init()
 FPS = 60
 clock = pygame.time.Clock()
 
-maprows = mapreader.ReadMap("Map1.txt") #display based on amount of tiles in map
+maprows = mapreader.ReadMap("Map2.txt") #display based on amount of tiles in map
 displaySize = (len(maprows)*(len(maprows[0])-1))
 display = pygame.display.set_mode((displaySize, displaySize))
 display.fill((255,255,255))
@@ -65,7 +65,8 @@ for i in range(len(maprows)):
 
 pygame.display.update()
 #pathfinder.pf.dfs(pathfinder.paths.GetStart())
-pathfinder.pf.bfs(pathfinder.paths.GetStart())
+#pathfinder.pf.bfs(pathfinder.paths.GetStart())
+pathfinder.pf.AStar(pathfinder.paths.GetStart(), pathfinder.paths.GetGoal())
 #print(pathfinder.pf.path)
 
 #for i in pathfinder.pf.path:
@@ -76,7 +77,7 @@ for i in range(len(pathfinder.pf.path)-1):
     startPoint = (pathfinder.pf.path[i].id%100 + 1)*(rectSize) - rectSize/2, (pathfinder.pf.path[i].id/100 + 1)*(rectSize) - rectSize/2
     endPoint = (pathfinder.pf.path[i+1].id%100 + 1)*(rectSize) - rectSize/2, (pathfinder.pf.path[i+1].id/100 + 1)*(rectSize) - rectSize/2
     pygame.draw.line(display, (0,0,255), startPoint, endPoint, 3)
-    #print(i)
+    print(i)
 
 pygame.display.update()
 while True:
