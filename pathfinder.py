@@ -1,4 +1,5 @@
-
+import pygamegui as gui
+import time, math
 
 class PathFinder:
     goalFound = False
@@ -64,19 +65,18 @@ class PathFinder:
             for neighbourID in q.adjacents:
                 skip = False
                 neighbourBlock = paths.GetBlockByID(neighbourID)
-                #set q as parent to all neighbour blocks
-                neighbourBlock.prevBlockID = q.id
+
                 if(neighbourBlock.isGoal):
                     self.path.append(neighbourBlock)
-                    prevID = neighbourBlock.prevBlockID
+                    prevID = q.prevBlockID
                     while(prevID != 0):
-                        #print("going")
-                        print(prevID)
+                        print("going")
+                        #print(prevID)
                         prevBlock = paths.GetBlockByID(prevID)
                         self.path.append(prevBlock)
                         prevID = prevBlock.prevBlockID
                     return
-                if(neighbourBlock.id%100 != q.id and neighbourBlock.id/100 != q.id):
+                if(neighbourBlock.id%100 != q.id%100 and neighbourBlock.id/100 != q.id/100):
                     neighbourBlock.g = q.g + 1.4
                 else:
                     neighbourBlock.g = q.g + 1
@@ -88,19 +88,47 @@ class PathFinder:
                 for i in closedList:
                     if(i.id == neighbourBlock.id and neighbourBlock.f >= i.f):
                         skip = True
-                if(skip == False):
+                if skip is False:
+                    # set q as parent to all neighbour blocks
+                    neighbourBlock.prevBlockID = q.id
                     openList.append(neighbourBlock)
-            closedList.append(q)                
+            closedList.append(q)
+            gui.Clear()
+            gui.DrawAStar(openList, closedList)
+            gui.Update()
+            time.sleep(0.01)
+
+    def Manhattan(self, currentID):
+        xCur = currentID % 100
+        yCur = currentID / 100
+        # Converting ID to coordinates
+        goalID = paths.GetGoal().id
+        xGoal = goalID % 100
+        yGoal = goalID / 100
+        h = abs(xCur - xGoal) + abs(yCur - yGoal)
+        return h
 
     def DDH(self, currentID):
-        xCur = currentID / 100
-        yCur = currentID % 100
+        xCur = currentID % 100
+        yCur = currentID / 100
         #Converting ID to coordinates
         goalID = paths.GetGoal().id
-        xGoal = goalID / 100
-        yGoal = goalID % 100
+        xGoal = goalID % 100
+        yGoal = goalID / 100
         #Diagonal Distance Heuristics
         h = max([abs(xCur - xGoal), abs(yCur - yGoal)])
+        return h
+
+    def Euclidean(self, currentID):
+        xCur = currentID % 100
+        yCur = currentID / 100
+        # Converting ID to coordinates
+        goalID = paths.GetGoal().id
+        print("Goal id:", goalID)
+        xGoal = goalID % 100
+        yGoal = goalID / 100
+
+        h = math.sqrt((xCur - xGoal)**2 + (yCur - yGoal)**2)
         return h
         
 class PathBlock:
@@ -116,6 +144,9 @@ class PathBlock:
         self.traversable = traversable
         self.isGoal = isGoal
         self.isStart = isStart
+
+    def GetPrevBlock(self):
+        return paths.GetBlockByID(self.prevBlockID)
 
 class Paths:
     pathBlocks = []
