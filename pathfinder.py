@@ -3,17 +3,18 @@ import time, math
 
 class PathFinder:
     goalFound = False
-    visited = set()
+    visited = []
     path = []
-    bfsQ = []
     def dfs(self, currentBlock):
-        
+        gui.Clear()
+        gui.DrawVisited(self.visited)
+        gui.Update()
         if(currentBlock.isGoal):
             self.goalFound = True
             self.path.append(currentBlock)
             return
         if(currentBlock not in self.visited and self.goalFound == False):
-            self.visited.add(currentBlock)
+            self.visited.append(currentBlock)
             print(currentBlock)
             for neighbour in currentBlock.adjacents:
                 print(neighbour)
@@ -25,16 +26,17 @@ class PathFinder:
                         return
                     
     def bfs(self, startBlock):
-        self.visited.add(startBlock)
-        self.bfsQ.append(startBlock)
-        while self.bfsQ:
-            s = self.bfsQ.pop(0)
+        self.visited.append(startBlock)
+        bfsQ = []
+        bfsQ.append(startBlock)
+        while bfsQ:
+            s = bfsQ.pop(0)
             print(s.id)
             for neighbour in s.adjacents:
                 neighbourBlock = paths.GetBlockByID(neighbour)
                 if neighbourBlock not in self.visited:
-                    self.visited.add(neighbourBlock)
-                    self.bfsQ.append(neighbourBlock)
+                    self.visited.append(neighbourBlock)
+                    bfsQ.append(neighbourBlock)
                     neighbourBlock.prevBlockID = s.id
                     if(neighbourBlock.isGoal):
                         print(neighbourBlock)
@@ -48,7 +50,7 @@ class PathFinder:
                         return
                 
 
-    def AStar(self, startBlock, goalBlock):
+    def AStar(self, startBlock):
         openList = []
         closedList = []
         openList.append(startBlock)
@@ -80,7 +82,7 @@ class PathFinder:
                     neighbourBlock.g = q.g + 1.4
                 else:
                     neighbourBlock.g = q.g + 1
-                neighbourBlock.h = self.DDH(neighbourID)
+                neighbourBlock.h = self.Diagonal(neighbourID)
                 neighbourBlock.f = neighbourBlock.g + neighbourBlock.h
                 for i in openList:
                     if(i.id == neighbourBlock.id and neighbourBlock.f >= i.f):
@@ -98,6 +100,76 @@ class PathFinder:
             gui.Update()
             time.sleep(0.01)
 
+    def LineSearch(self, startBlock):
+        self.visited.append(startBlock)
+        print(startBlock.id)
+        lineQ = []
+        sbQ = []
+        # Initiate first 3 directional lines
+        for i in range(3):
+            lineDir = startBlock.adjacents[0]
+            for neighbourID in startBlock.adjacents:
+                if self.Diagonal(neighbourID) < self.Diagonal(lineDir) and neighbourID not in lineQ:
+                    lineDir = neighbourID
+            lineQ.append(lineDir)
+            sbQ.append(self.SendLine(startBlock, lineDir))
+
+        while sbQ:
+            sb = sbQ.pop(0)
+            nID = sb.adjacents[0]
+            #Get neighbour closest to goal
+            for neighbourID in sb.adjacents:
+                if(self.Diagonal(neighbourID) < self.Diagonal(nID) and paths.GetBlockByID(neighbourID) not in self.visited):
+                    nID = neighbourID
+            nextStartBlock = self.SendLine(sb, nID)
+            if(nextStartBlock.isGoal):
+                self.path.append(nextStartBlock)
+                prevID = nextStartBlock.prevBlockID
+                while (prevID != 0):
+                    print("going")
+                    prevBlock = paths.GetBlockByID(prevID)
+                    self.path.append(prevBlock)
+                    prevID = prevBlock.prevBlockID
+                return
+            sbQ.append(nextStartBlock)
+        # for neighbourID in lineQ:
+        #     nBlock = paths.GetBlockByID(neighbourID)
+        #     self.visited.append(nBlock)
+        #     nBlock.prevBlockID = startBlock.id
+        #     nextID_dif = nBlock.id - startBlock.id
+        #     print(nextID_dif)
+        #     while True:
+        #         nextID = nBlock.id + nextID_dif
+        #         if nextID not in nBlock.adjacents:
+        #             lineQ.append(nBlock.id)
+        #             break
+        #         nBlock = paths.GetBlockByID(nextID)
+        #         nBlock.prevBlockID = nextID - nextID_dif
+        #         self.visited.append(nBlock)
+        #         gui.Clear()
+        #         gui.DrawVisited(self.visited)
+        #         gui.Update()
+        #         time.sleep(0.1)
+
+    def SendLine(self, startBlock, dir):
+        nextID_dif = dir - startBlock.id
+        while True:
+            nextID = startBlock.id + nextID_dif
+            if nextID not in startBlock.adjacents:
+                return startBlock
+            startBlock = paths.GetBlockByID(nextID)
+            if(startBlock in self.visited):
+                return startBlock
+            startBlock.prevBlockID = nextID - nextID_dif
+            if(startBlock.isGoal):
+                self.goalFound = True
+                return startBlock
+            self.visited.append(startBlock)
+            gui.Clear()
+            gui.DrawVisited(self.visited)
+            gui.Update()
+            time.sleep(0.1)
+
     def Manhattan(self, currentID):
         xCur = currentID % 100
         yCur = currentID / 100
@@ -108,7 +180,7 @@ class PathFinder:
         h = abs(xCur - xGoal) + abs(yCur - yGoal)
         return h
 
-    def DDH(self, currentID):
+    def Diagonal(self, currentID):
         xCur = currentID % 100
         yCur = currentID / 100
         #Converting ID to coordinates

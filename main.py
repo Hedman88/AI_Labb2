@@ -8,7 +8,8 @@ mapreader.InitMapBlocks()
 gui.Update()
 #pathfinder.pf.dfs(pathfinder.paths.GetStart())
 #pathfinder.pf.bfs(pathfinder.paths.GetStart())
-pathfinder.pf.AStar(pathfinder.paths.GetStart(), pathfinder.paths.GetGoal())
+#pathfinder.pf.AStar(pathfinder.paths.GetStart())
+pathfinder.pf.LineSearch(pathfinder.paths.GetStart())
 #print(pathfinder.pf.path)
 
 #for i in pathfinder.pf.path:

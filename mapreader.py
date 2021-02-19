@@ -6,7 +6,6 @@ def ReadMap(mapFileName):
     global maprows
     maprows = f.readlines()
     f.close()
-    print(len(maprows))
     return maprows
 
 def InitMapBlocks():
