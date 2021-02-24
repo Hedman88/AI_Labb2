@@ -6,8 +6,8 @@ pygame.init()
 FPS = 60
 clock = pygame.time.Clock()
 
-maprows = mapreader.ReadMap("Map3.txt") #display based on amount of tiles in map
-displaySize = (len(maprows)*(len(maprows[0])-1))
+maprows = mapreader.ReadMap("Map4.txt") #display based on amount of tiles in map
+displaySize = (len(maprows)*(len(maprows[0])-1))*2
 display = pygame.display.set_mode((displaySize, displaySize))
 display.fill((255,255,255))
 pygame.display.set_caption("Path Finding")
@@ -46,7 +46,6 @@ def DrawPath(path):
         startPoint = (path[i].id%100 + 1)*(rectSize) - rectSize/2, (path[i].id/100 + 1)*(rectSize) - rectSize/2
         endPoint = (path[i+1].id%100 + 1)*(rectSize) - rectSize/2, (path[i+1].id/100 + 1)*(rectSize) - rectSize/2
         pygame.draw.line(display, (0,0,255), startPoint, endPoint, 3)
-        print(i)
 
 def DrawAStar(openList, closedList):
     for i in range(len(openList)):

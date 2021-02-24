@@ -45,8 +45,12 @@ def InitMapBlocks():
                 neighbours.append(NW)
     
             if(maprows[i][j] == "0"):
-                pathfinder.paths.pathBlocks.append(pathfinder.PathBlock(selfID, neighbours, True, False, False))
+                pathfinder.paths.pathBlocks[selfID] = pathfinder.PathBlock(selfID, neighbours, True, False, False)
             if(maprows[i][j] == "S"):
-                pathfinder.paths.pathBlocks.append(pathfinder.PathBlock(selfID, neighbours, True, False, True))
+                block = pathfinder.PathBlock(selfID, neighbours, True, False, True)
+                pathfinder.paths.pathBlocks["start"] = block
+                pathfinder.paths.pathBlocks[selfID] = block
             if(maprows[i][j] == "G"):
-                pathfinder.paths.pathBlocks.append(pathfinder.PathBlock(selfID, neighbours, True, True, False))
+                block = pathfinder.PathBlock(selfID, neighbours, True, True, False)
+                pathfinder.paths.pathBlocks["goal"] = block
+                pathfinder.paths.pathBlocks[selfID] = block
