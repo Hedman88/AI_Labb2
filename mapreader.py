@@ -1,6 +1,5 @@
 import pathfinder
 
-
 def ReadMap(mapFileName):
     f = open(mapFileName,"r")
     global maprows
@@ -8,6 +7,8 @@ def ReadMap(mapFileName):
     f.close()
     return maprows
 
+# Creating all map nodes and storing their IDs and neighbour IDs as ints
+# by taking Y-coordinate times 100 and adding the X-coordinate to that
 def InitMapBlocks():
     print(len(maprows))
     for i in range(len(maprows)):

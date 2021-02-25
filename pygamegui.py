@@ -6,8 +6,8 @@ pygame.init()
 FPS = 60
 clock = pygame.time.Clock()
 
-maprows = mapreader.ReadMap("Map4.txt") #display based on amount of tiles in map
-displaySize = (len(maprows)*(len(maprows[0])-1))*2
+maprows = mapreader.ReadMap("Map3.txt") #display based on amount of tiles in map
+displaySize = (len(maprows)*(len(maprows[0])-1))
 display = pygame.display.set_mode((displaySize, displaySize))
 display.fill((255,255,255))
 pygame.display.set_caption("Path Finding")

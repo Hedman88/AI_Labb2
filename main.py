@@ -1,4 +1,4 @@
-import pathfinder, mapreader, timer, cProfile, time
+import pathfinder, mapreader, timer, time
 import pygamegui as gui
 
 
@@ -6,7 +6,6 @@ import pygamegui as gui
 gui.DrawMap()
 mapreader.InitMapBlocks()
 gui.Update()
-#cProfile.run("pathfinder.pf.AStar(pathfinder.paths.GetStart())")
 
 timer.StartTimer()
 pathfinder.pf.dfs(pathfinder.paths.GetStart())

@@ -6,6 +6,7 @@ class PathFinder:
     visited = []
     path = []
 
+# Resets all values so the next run wont be affected by the previous one
     def Reset(self):
         self.visited = []
         self.path = []
@@ -15,6 +16,7 @@ class PathFinder:
         # gui.Clear()
         # gui.DrawVisited(self.visited)
         # gui.Update()
+        # time.sleep(0.01)
         if(currentBlock.isGoal):
             self.goalFound = True
             self.path.append(currentBlock)
@@ -49,6 +51,10 @@ class PathFinder:
                             self.path.append(prevBlock)
                             prevID = prevBlock.prevBlockID
                         return
+            # gui.Clear()
+            # gui.DrawVisited(self.visited)
+            # gui.Update()
+            # time.sleep(0.01)
                 
 
     def AStar(self, startBlock):
@@ -77,9 +83,13 @@ class PathFinder:
                         prevID = prevBlock.prevBlockID
                     return
                 if(neighbourBlock.id%100 != q.id%100 and neighbourBlock.id/100 != q.id/100):
-                    neighbourBlock.g = q.g + 1.4
+                    neighbourBlock.g = 1.4
+                    # Byt till denna undre rad för fullständig A*
+                    # neighbourBlock.g = q.g + 1.4
                 else:
-                    neighbourBlock.g = q.g + 1
+                    neighbourBlock.g = 1
+                    # Byt till denna undre rad för fullständig A*
+                    # neighbourBlock.g = q.g + 1
                 neighbourBlock.h = self.Diagonal(neighbourID)
                 neighbourBlock.f = neighbourBlock.g + neighbourBlock.h
                 for i in openList:
@@ -151,6 +161,7 @@ class PathFinder:
             # gui.Update()
             # time.sleep(0.01)
 
+# Following are different heuristics for testing purposes
     def Manhattan(self, currentID):
         xCur = currentID % 100
         yCur = currentID / 100
